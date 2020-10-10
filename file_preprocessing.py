@@ -1,7 +1,7 @@
 import csv
 import re
 
-csv_filename = "data.csv"
+csv_filename = "data_2.csv"
 
 
 # get clean data without punctuation
@@ -10,7 +10,7 @@ def get_clean_data(file: str):
         data_to_clean = row_file.read().lower().split("\n")
 
         clean_sentences = [re.sub(r"[^A-Za-z0-9]+", ' ', sent) for sent in data_to_clean]
-        print(clean_sentences)
+
     with open("clean_" + file, "w") as clean_file:
         clean_file.write("\n".join(clean_sentences))
 
@@ -26,14 +26,13 @@ def create_csv(file_csv: str):
 
     # create .csv file with combination of right and wrong sentences
     with open(file_csv, 'w') as data_file:
-        file_writer = csv.writer(data_file, delimiter=',', quoting=csv.QUOTE_MINIMAL)
-        file_writer.writerow(["Sentence", "target"])
+        writer = csv.DictWriter(data_file,
+                                delimiter=",",
+                                fieldnames=["Sentence", "target"])
+        writer.writeheader()
 
-        for right_sent in right_txt:
-            file_writer.writerow([right_sent, 1])
-
-        for wrong_txt in wrong_txt:
-            file_writer.writerow([wrong_txt, 0])
+        writer.writerows({"Sentence": right_txt[n], "target": 1} for n in range(len(right_txt)))
+        writer.writerows({"Sentence": wrong_txt[n], "target": 0} for n in range(len(wrong_txt)))
 
 
 if __name__ == '__main__':
